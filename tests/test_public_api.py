@@ -37,7 +37,7 @@ def test_public_surface_is_explicit():
     assert set(pysos_interop.__all__) == expected
     for name in pysos_interop.__all__:
         assert hasattr(pysos_interop, name)
-    assert pysos_interop.__version__ == "0.2.1"
+    assert pysos_interop.__version__ == "0.3.0"
 
 
 def _run(code: str) -> subprocess.CompletedProcess:

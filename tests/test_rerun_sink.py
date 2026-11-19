@@ -49,6 +49,18 @@ def entity_paths_in(rrd_path):
     return {line.split(" rows=", 1)[0].lstrip("/") for line in summary.splitlines()}
 
 
+def component_values_in(rrd_path, entity_path, column):
+    """Return one component column for an entity, or ``None`` if absent."""
+
+    wanted = entity_path.lstrip("/")
+    for chunk in RrdReader(str(rrd_path)).store().stream():
+        if chunk.entity_path.lstrip("/") == wanted:
+            batch = chunk.to_record_batch()
+            if column in batch.schema.names:
+                return batch.column(column).to_pylist()
+    return None
+
+
 def test_two_entity_ten_sample_stream_writes_a_non_trivial_rrd(tmp_path):
     stream = write_stream(tmp_path / "run.jsonl", samples=10)
     rrd_path = recordings_to_rrd(stream, tmp_path / "run.rrd", app_id="pysos-test")
@@ -62,6 +74,70 @@ def test_two_entity_ten_sample_stream_writes_a_non_trivial_rrd(tmp_path):
     for key in KEYS:
         for leaf in ENTITY_LEAVES:
             assert entity_path(key, leaf) in logged, (key, leaf, sorted(logged))
+
+
+def test_labels_are_logged_only_for_supplied_slugs(tmp_path):
+    stream = write_stream(tmp_path / "run.jsonl", samples=2)
+    labelled = entity_slug(KEYS[0])
+    rrd_path = recordings_to_rrd(
+        stream, tmp_path / "labels.rrd", labels={labelled: "ALPHA"}
+    )
+
+    logged = entity_paths_in(rrd_path)
+    assert entity_path(KEYS[0], "label") in logged
+    assert entity_path(KEYS[1], "label") not in logged
+
+    text = component_values_in(
+        rrd_path, entity_path(KEYS[0], "label"), "TextDocument:text"
+    )
+    assert text == [["ALPHA"]]
+
+
+def test_supplied_colour_tints_marker_and_trail(tmp_path):
+    stream = write_stream(tmp_path / "run.jsonl", samples=3)
+    slug = entity_slug(KEYS[0])
+    rrd_path = recordings_to_rrd(
+        stream, tmp_path / "colour.rrd", colors={slug: (0, 128, 255)}
+    )
+
+    logged = entity_paths_in(rrd_path)
+    assert entity_path(KEYS[0], "marker") in logged
+    assert entity_path(KEYS[0], "trail") in logged
+    assert entity_path(KEYS[1], "marker") in logged
+
+    marker_colours = component_values_in(
+        rrd_path, entity_path(KEYS[0], "marker"), "Boxes3D:colors"
+    )
+    assert marker_colours is not None and marker_colours[0]
+    assert (
+        component_values_in(rrd_path, entity_path(KEYS[1], "marker"), "Boxes3D:colors")
+        is None
+    )
+
+
+def test_recording_without_labels_or_colours_keeps_previous_output(tmp_path):
+    stream = write_stream(tmp_path / "run.jsonl", samples=2)
+
+    # The 0.2.x positional/keyword call must still work unchanged.
+    old_path = recordings_to_rrd(stream, tmp_path / "old.rrd")
+    new_path = recordings_to_rrd(
+        stream,
+        tmp_path / "new.rrd",
+        app_id="pysos_interop",
+        origin=None,
+        trail_points=200,
+    )
+
+    for rrd_path in (old_path, new_path):
+        logged = entity_paths_in(rrd_path)
+        assert entity_path(KEYS[0], "marker") in logged
+        assert entity_path(KEYS[0], "label") not in logged
+        assert (
+            component_values_in(
+                rrd_path, entity_path(KEYS[0], "marker"), "Boxes3D:colors"
+            )
+            is None
+        )
 
 
 def test_observe_accepts_an_rpr_frame(tmp_path):

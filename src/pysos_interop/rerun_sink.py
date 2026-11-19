@@ -12,13 +12,20 @@ with the extra to install; the pure path/rotation helpers keep working.
 The sink is synchronous: it owns no thread, no socket and no run control.  It
 turns a recorded JSONL stream into an ``.rrd`` file or logs live frames as
 they are handed to :meth:`RerunSink.observe`.
+
+Labels and colours are keyed by the documented wire slug
+``<site>_<application>_<entity>`` (see :func:`entity_slug`), never by entity
+marking.  A supplied label becomes a static ``TextDocument`` at
+``world/entity/<slug>/label``; a supplied colour tints that entity's ``marker``
+and ``trail``.  Slugs with no label or colour keep the previous output exactly,
+so an existing call produces the same ``.rrd`` as before.
 """
 
 from __future__ import annotations
 
 import math
 from collections import deque
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -65,6 +72,10 @@ def entity_path(key: EntityKey, leaf: str) -> str:
     """Rerun entity path for one leaf of an entity."""
 
     return f"world/entity/{entity_slug(key)}/{leaf}"
+
+
+def _label_path(slug: str) -> str:
+    return f"world/entity/{slug}/label"
 
 
 def rpy_rad_to_quaternion(
@@ -120,6 +131,8 @@ class RerunSink:
         app_id: str = "pysos_interop",
         origin: GeoOrigin | None = None,
         trail_points: int = 200,
+        labels: Mapping[str, str] | None = None,
+        colors: Mapping[str, tuple[int, int, int]] | None = None,
     ) -> None:
         rr = _import_rerun()
         self._rr = rr
@@ -127,6 +140,8 @@ class RerunSink:
         self.rrd_path = Path(rrd_path)
         self.origin = origin or GeoOrigin()
         self.trail_points = max(1, int(trail_points))
+        self.labels = dict(labels or {})
+        self.colors = dict(colors or {})
         self._histories: dict[str, deque[Vec3]] = {}
         self._closed = False
 
@@ -136,6 +151,12 @@ class RerunSink:
         self._rec.log(
             "world/origin", rr.TextDocument(_origin_text(self.origin)), static=True
         )
+        if self.labels:
+            self._rec.set_time("sim_time", duration=0.0)
+            for slug, label in self.labels.items():
+                self._rec.log(
+                    _label_path(slug), rr.TextDocument(label), static=True
+                )
 
     def observe(self, item: EntityState | RprFrame) -> None:
         """Log one entity state or decoded RPR frame at its simulation time."""
@@ -159,18 +180,26 @@ class RerunSink:
             history = deque(maxlen=self.trail_points)
             self._histories[slug] = history
         history.append(state.position_enu_m)
+        color = self.colors.get(slug)
         if len(history) >= 2:
+            trail_kwargs: dict[str, Any] = {}
+            if color is not None:
+                trail_kwargs["colors"] = [color]
             self._rec.log(
                 entity_path(state.key, "trail"),
-                self._rr.LineStrips3D([list(history)]),
+                self._rr.LineStrips3D([list(history)], **trail_kwargs),
             )
 
+        marker_kwargs: dict[str, Any] = {}
+        if color is not None:
+            marker_kwargs["colors"] = [color]
         self._rec.log(
             entity_path(state.key, "marker"),
             self._rr.Boxes3D(
                 sizes=[_MARKER_SIZE_M],
                 centers=[state.position_enu_m],
                 quaternions=[quaternion],
+                **marker_kwargs,
             ),
         )
 
@@ -211,11 +240,17 @@ def recordings_to_rrd(
     app_id: str = "pysos_interop",
     origin: GeoOrigin | None = None,
     trail_points: int = 200,
+    labels: Mapping[str, str] | None = None,
+    colors: Mapping[str, tuple[int, int, int]] | None = None,
 ) -> Path:
     """Turn a recorded JSONL stream into an ``.rrd`` file and return its path.
 
     The reader is :func:`pysos_interop.jsonl.iter_jsonl`, which also accepts a
     truth stream written by ``TruthRecorder`` because its rows are a superset.
+
+    ``labels`` and ``colors`` are keyed by wire slug
+    (``<site>_<application>_<entity>``).  Omit either to keep the previous
+    output; no automatic label or palette is invented.
     """
 
     sink = RerunSink(
@@ -223,6 +258,8 @@ def recordings_to_rrd(
         app_id=app_id,
         origin=origin,
         trail_points=trail_points,
+        labels=labels,
+        colors=colors,
     )
     try:
         states: Iterable[EntityState] = iter_jsonl(jsonl_path)

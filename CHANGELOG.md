@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-19
+
+Additive release: optional per-entity labels and colours for the Rerun export,
+so a multi-aircraft run is readable in the viewer. No breaking change to any
+existing call.
+
+### Added
+
+- `recordings_to_rrd(..., labels=..., colors=...)` and the `RerunSink`
+  constructor accept optional mappings keyed by the wire slug
+  `<site>_<application>_<entity>`.
+- A supplied label is logged as a static `TextDocument` at
+  `world/entity/<slug>/label` on the `sim_time` timeline. A supplied 0-255 RGB
+  colour is applied to that entity's `marker` (`Boxes3D`) and `trail`
+  (`LineStrips3D`).
+- Slugs without an entry keep the previous output; no automatic label or
+  palette is invented, so an old call produces the same `.rrd`.
+
 ## [0.2.1] - 2026-11-19
 
 Packaging fix: the `rpr` extra pins the sibling release wheel; no API change.

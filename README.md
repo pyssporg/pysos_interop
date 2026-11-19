@@ -91,9 +91,21 @@ core stays dependency-light and the module imports cleanly without the extra.
 ```python
 from pysos_interop.rerun_sink import recordings_to_rrd
 
-recordings_to_rrd("run.jsonl", "run.rrd", app_id="pysos_interop")
+recordings_to_rrd(
+    "run.jsonl",
+    "run.rrd",
+    app_id="pysos_interop",
+    labels={"1_1_7": "ALPHA", "1_1_8": "BRAVO"},
+    colors={"1_1_7": (0, 128, 255), "1_1_8": (255, 128, 0)},
+)
 ```
 
 Paths follow `world/entity/<site>_<app>_<entity>/{pose,trail,marker}` plus
 `status/{airspeed_mps,altitude_m,climb_rate_mps}`. The Rerun world frame is
 ENU and orientation is logged as a `(x, y, z, w)` quaternion.
+
+`labels` and `colors` are optional and keyed by the documented wire slug
+`<site>_<application>_<entity>`, not by marking. A supplied label becomes a
+static `world/entity/<slug>/label` `TextDocument`; a supplied 0-255 RGB colour
+tints that entity's `marker` and `trail`. Slugs without an entry keep the
+previous output exactly; with neither mapping supplied the `.rrd` is unchanged.
