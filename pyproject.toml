@@ -1,0 +1,51 @@
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pysos-interop"
+dynamic = ["version"]
+description = "Neutral entity-state model and protocol interop for system-of-systems simulation."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "pyssporg contributors" }]
+keywords = ["dis", "interop", "entity-state", "simulation", "system-of-systems"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering",
+]
+# The core is standard-library only.  DIS support is an optional extra.
+dependencies = []
+
+[project.optional-dependencies]
+dis = ["opendis>=1.0"]
+dev = ["pytest>=8", "ruff>=0.6", "opendis>=1.0"]
+
+[tool.hatch.version]
+path = "src/pysos_interop/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pysos_interop"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+xfail_strict = true
+addopts = "-q"
+markers = [
+  "network: multicast on the local interface; set PYSOS_NETWORK_TESTS=1 to run",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
