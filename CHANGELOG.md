@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-19
+
+Packaging fix: the `rpr` extra pins the sibling release wheel; no API change.
+
 ## [0.2.0] - 2026-11-19
 
 Additive release: the RPR decode path, the truth recorder with its metadata

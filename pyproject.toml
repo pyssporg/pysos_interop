@@ -29,13 +29,13 @@ dependencies = []
 
 [project.optional-dependencies]
 dis = ["opendis>=1.0"]
-rpr = ["pysos-rpr>=0.1"]
+rpr = ["pysos-rpr @ https://github.com/pyssporg/pysos_rpr/releases/download/v0.1.0/pysos_rpr-0.1.0-py3-none-any.whl"]
 rerun = ["rerun-sdk>=0.43,<0.44; python_version >= '3.11'"]
 dev = [
   "pytest>=8",
   "ruff>=0.6",
   "opendis>=1.0",
-  "pysos-rpr>=0.1; python_version >= '3.11'",
+  "pysos-rpr @ https://github.com/pyssporg/pysos_rpr/releases/download/v0.1.0/pysos_rpr-0.1.0-py3-none-any.whl ; python_version >= '3.11'",
   "rerun-sdk>=0.43,<0.44; python_version >= '3.11'",
 ]
 
@@ -44,6 +44,9 @@ path = "src/pysos_interop/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/pysos_interop"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
