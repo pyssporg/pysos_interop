@@ -17,7 +17,7 @@ It owns a neutral entity-state model plus protocol adapters at the edge. It
 does not own scenarios, orchestration, engines, or project-specific payloads.
 
 - Modules: `model`, `rates`, `geo`, `dead_reckoning`, `transport`, `jsonl`,
-  and the optional `dis` adapter.
+  and the optional `dis` and `rpr` adapters.
 - It sits near the bottom of the dependency graph; consumers depend on it,
   never the reverse.
 
@@ -32,11 +32,16 @@ does not own scenarios, orchestration, engines, or project-specific payloads.
   `model`, engines, or recorders.
 - **No project schemas.** No scenario format, UDP JSON payload schema,
   Rerun bridge, or consumer-specific field may enter this repository.
-- **No dependency on another `pysos_*` or `pyssp_*` package at 0.1.0.**
-- **`opendis` is optional.** `import pysos_interop` and every core module must
-  work without it; only `pysos_interop.dis` may require it, and only when used.
-- **No CLI and no sources/sinks.** This is a contract and codec library, not an
-  application.
+- **The core has no dependency on another `pysos_*` or `pyssp_*` package.**
+  Optional protocol extras may depend on a sibling vocabulary package: only
+  the `rpr` extra uses `pysos-rpr`, and the core never imports it.
+- **Protocol dependencies are optional.** `import pysos_interop` and every core
+  module must work without `opendis` and `pysos_rpr`; only
+  `pysos_interop.dis` and `pysos_interop.rpr` may require them, and only when
+  those modules are imported.
+- **No CLI and no application framework.** `Channel`, `RprChannel`,
+  `JsonlRecorder`, `RprJsonlRecorder` and the `iter_*` functions are library
+  edge code; do not add run control.
 
 ## Code guidelines
 

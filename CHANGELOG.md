@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Optional `rpr` extra: an independent RPR-derived protobuf codec in
+  `pysos_interop.rpr`. `RprOrigin` defines the explicit local ENU frame
+  (WGS84 or ECEF reference point); RPR ECEF position and body-frame velocity
+  convert to and from `EntityState`.
+- `RprExtras` preserves the dead-reckoning algorithm and parameter bytes, body
+  acceleration, `is_frozen`, entity type, platform kind and marking character
+  set. Strict and lenient decode forward the `pysos_rpr` unknown-field policy.
+- `RprChannel` adapts one `transport.Channel` as a synchronous RPR source/sink.
+- `RprJsonlRecorder`, `iter_rpr_jsonl`, `iter_rpr_frames` and
+  `replay_rpr_jsonl` record payloads with optional sequence and timestamp.
+  The existing JSONL/DIS recording path is unchanged.
+
 ## [0.1.0] - 2026-11-19
 
 ### Added

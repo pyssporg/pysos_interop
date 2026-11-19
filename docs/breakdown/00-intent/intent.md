@@ -19,7 +19,8 @@ meet at a shared, replaceable seam instead of negotiating pairwise.
   rates, and wire field order are adapter concerns. The model itself stays
   frame-explicit and protocol-free.
 - **Standard-library core.** `pysos_interop` must install and import anywhere
-  Python 3.10+ runs. Optional protocols, starting with DIS, are extras.
+  Python 3.10+ runs. Optional protocols, DIS and RPR, are extras; neither is
+  imported by the core.
 - **Pure, testable kernels.** Rate conversion, dead reckoning and staleness are
   pure functions with explicit inputs. Transport raises typed errors.
 - **Record and replay without a transport.** JSONL is the lowest common
@@ -35,7 +36,9 @@ meet at a shared, replaceable seam instead of negotiating pairwise.
 - **Not a scenario format.** No exercise file, entity catalogue, routing table,
   or project-specific UDP JSON schema.
 - **Not a viewer.** No rendering, Rerun bridge, or UI.
-- **Not an application.** No CLI and no source/sink classes beyond `Channel`,
-  `JsonlRecorder` and `iter_jsonl`.
-- **Not a dependency hub for the family.** At 0.1.0 it depends on no other
-  `pysos_*` or `pyssp_*` package, and nothing in its core depends on DIS.
+- **Not an application.** No CLI and no run control. `Channel`, `RprChannel`,
+  `JsonlRecorder`, `RprJsonlRecorder` and the `iter_*` functions are library
+  edge code, not sinks that own a process.
+- **Not a dependency hub for the family.** The core depends on no other
+  `pysos_*` or `pyssp_*` package and imports neither DIS nor RPR. The optional
+  RPR adapter is the only sibling dependency, isolated in the `rpr` extra.

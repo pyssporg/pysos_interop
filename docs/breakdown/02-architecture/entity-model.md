@@ -48,7 +48,9 @@ are converted with `euler_rates_to_body_rates` before they enter the model.
 
 The local frame is defined by a `GeoOrigin`. The DIS codec defaults to the
 WGS84 point at 0 latitude, 0 longitude, 0 altitude; callers that care about a
-scenario area pass their own origin to both encode and decode.
+scenario area pass their own origin to both encode and decode. The RPR codec
+requires an explicit `RprOrigin` with no default; its position is ECEF and its
+velocity is body-frame, so it also converts linear velocity at the boundary.
 
 ## Time and staleness
 

@@ -34,6 +34,7 @@ jobs:
           import pysos_interop
           assert pysos_interop.__version__ == "0.1.0"
           assert "opendis" not in sys.modules
+          assert "pysos_rpr" not in sys.modules
           PY
 
       - name: Check the version tag

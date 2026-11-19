@@ -41,9 +41,13 @@ jobs:
           import pysos_interop.model
           import pysos_interop.rates
           import pysos_interop.transport
-          heavy = {"numpy", "opendis"} & set(sys.modules)
+          heavy = {"numpy", "opendis", "pysos_rpr"} & set(sys.modules)
           assert not heavy, f"core imported {sorted(heavy)}"
           PY
 
       - name: DIS extra imports
         run: python -c "import pysos_interop.dis"
+
+      - name: RPR extra imports
+        if: matrix.python != '3.10'
+        run: python -c "import pysos_interop.rpr"

@@ -4,13 +4,13 @@ The repository is a stack with one-way dependencies. A higher layer may import
 a lower one; a lower layer never imports a higher one.
 
 ```text
-dis (optional)   jsonl        transport
-     │              │             │
-     └──────────────┼─────────────┘
-                    │
-             dead_reckoning
-                    │
-          model   rates   geo
+dis (optional)   rpr (optional)   jsonl        transport
+     │                 │              │             │
+     └─────────────────┼──────────────┼─────────────┘
+                       │
+                dead_reckoning
+                       │
+             model   rates   geo
 ```
 
 ## `model`
@@ -52,8 +52,22 @@ module is imported, never from the package `__init__`. This is where ENU becomes
 ECEF, Euler radians become DIS `psi/theta/phi`, and algorithm-4 velocity becomes
 body-frame. Angular velocity crosses unchanged because both sides use body axes.
 
+## `rpr` (optional extra)
+
+RPR-derived protobuf encode and decode over `pysos_rpr.messages`. Imports
+`pysos_rpr` only when the module is imported, never from the package
+`__init__`. RPR position is ECEF, so every call takes an explicit `RprOrigin`
+(WGS84 lat/lon/height or `RprOrigin.from_ecef`); there is no global default.
+Velocity is always body-frame and crosses to ENU through the orientation.
+`RprExtras` carries the dead-reckoning algorithm and parameter bytes, body
+acceleration, `is_frozen`, entity type, platform kind and marking character
+set; `exercise_id` and `timestamp` have no RPR field. `RprChannel` is a
+synchronous source/sink over one `Channel`, and `RprJsonlRecorder` plus
+`iter_rpr_frames`/`replay_rpr_jsonl` provide a separate record/replay path so
+the DIS recording format stays untouched.
+
 ## Rule
 
-Protocol knowledge lives only in `dis` (and the frame/rate helpers it calls).
-If a conversion is needed by an engine, it belongs in that engine or in
-`rates`/`geo`, not in `model`.
+Protocol knowledge lives only in `dis` and `rpr` (and the frame/rate helpers
+they call). If a conversion is needed by an engine, it belongs in that engine
+or in `rates`/`geo`, not in `model`.

@@ -1,7 +1,9 @@
 """Neutral entity state and protocol interop for system-of-systems simulation.
 
 The core imports only the standard library.  DIS support lives in
-:mod:`pysos_interop.dis` and needs the optional ``opendis`` package.
+:mod:`pysos_interop.dis` and needs the optional ``opendis`` package.  RPR
+support lives in :mod:`pysos_interop.rpr` and needs the optional
+``pysos-rpr`` package; neither adapter is imported here.
 """
 
 from __future__ import annotations
