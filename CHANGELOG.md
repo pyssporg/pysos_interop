@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-19
+
+Additive release: the RPR decode path, the truth recorder with its metadata
+sidecar and measurement CSV, and the optional Rerun sink. No breaking changes
+to the entity model, the DIS codec, the JSONL recording format or the public
+core surface.
+
 ### Added
 
 - Optional `rpr` extra: an independent RPR-derived protobuf codec in
@@ -32,6 +39,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `status/{airspeed_mps,altitude_m,climb_rate_mps}`. `recordings_to_rrd`
   converts a recorded JSONL stream. `rerun` is imported lazily; the core
   never imports it.
+
+### Compatibility
+
+- Three independent optional extras: `dis`, `rpr` and `rerun`. None is
+  installed with the core, and `import pysos_interop` still pulls in no
+  third-party package.
+- `rpr` depends on `pysos-rpr>=0.1`, a sibling release from the same
+  organisation, not on any other `pysos_*` or `pyssp_*` package.
+- `rpr` and `rerun` are available on Python >= 3.11 only; the core and `dis`
+  keep their previous floor of Python 3.10.
 
 ## [0.1.0] - 2026-11-19
 
