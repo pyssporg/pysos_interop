@@ -17,9 +17,12 @@ It owns a neutral entity-state model plus protocol adapters at the edge. It
 does not own scenarios, orchestration, engines, or project-specific payloads.
 
 - Modules: `model`, `rates`, `geo`, `dead_reckoning`, `transport`, `jsonl`,
-  `truth`, and the optional `dis`, `rpr` and `rerun` adapters.
+  `truth`, `fanin`, and the optional `dis`, `rpr` and `rerun` adapters.
 - It sits near the bottom of the dependency graph; consumers depend on it,
   never the reverse.
+- `SampleFanIn` is recorder-side passive sample assembly. It takes an injectable
+  clock and a `write_sample` callback; it owns no socket, protocol import, file
+  format or run control.
 
 ## Hard constraints
 
@@ -42,8 +45,9 @@ does not own scenarios, orchestration, engines, or project-specific payloads.
   `pysos_interop.dis`, `pysos_interop.rpr` and `pysos_interop.rerun_sink` may
   require them, and only when those paths are used.
 - **No CLI and no application framework.** `Channel`, `RprChannel`,
-  `JsonlRecorder`, `RprJsonlRecorder` and the `iter_*` functions are library
-  edge code; do not add run control.
+  `JsonlRecorder`, `RprJsonlRecorder`, `SampleFanIn` and the `iter_*` functions
+  are library edge code; do not add run control. The fan-in assembles samples
+  handed to it and never drives a run.
 
 ## Code guidelines
 

@@ -32,7 +32,7 @@ jobs:
           /tmp/smoke/bin/python - <<'PY'
           import sys
           import pysos_interop
-          assert pysos_interop.__version__ == "0.3.0"
+          assert pysos_interop.__version__ == "0.4.0"
           assert "opendis" not in sys.modules
           assert "pysos_rpr" not in sys.modules
           PY

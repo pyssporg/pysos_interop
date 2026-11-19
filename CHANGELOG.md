@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-19
+
+Additive release: the recorder-side sample fan-in moves into the core record
+layer. No breaking change to any existing call, and the package still provides
+no run control or CLI.
+
+### Added
+
+- `pysos_interop.fanin.SampleFanIn`, a standard-library per-sample barrier that
+  aligns one ordinal from every expected slug before recording. It keeps the
+  `observe`/`poll`/`flush` contract, per-slug ordinals and the 2 s watchdog
+  partial flush, with an injectable clock for tests.
+- `pysos_interop.fanin.sample_timestamp(ordinal, sample_period_s=0.1)`, the
+  RPR-edge time base: RPR has no time field, so sample `n` is at
+  `n * sample_period_s`.
+- Both names are re-exported from `pysos_interop` and are core API; the fan-in
+  is not part of the optional `rpr` extra.
+
+### Compatibility
+
+- The fan-in was moved from the flight-sim recorder scripts without a behaviour
+  change. It imports no RPR/protobuf package, opens no socket and writes no
+  file; the callback owns recording.
+
 ## [0.3.0] - 2026-11-19
 
 Additive release: optional per-entity labels and colours for the Rerun export,

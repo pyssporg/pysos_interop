@@ -17,6 +17,7 @@ def test_public_surface_is_explicit():
         "EntityState",
         "GeoOrigin",
         "JsonlRecorder",
+        "SampleFanIn",
         "TransportError",
         "TruthMetadata",
         "TruthRecorder",
@@ -33,11 +34,12 @@ def test_public_surface_is_explicit():
         "iter_jsonl",
         "iter_truth",
         "read_truth_metadata",
+        "sample_timestamp",
     }
     assert set(pysos_interop.__all__) == expected
     for name in pysos_interop.__all__:
         assert hasattr(pysos_interop, name)
-    assert pysos_interop.__version__ == "0.3.0"
+    assert pysos_interop.__version__ == "0.4.0"
 
 
 def _run(code: str) -> subprocess.CompletedProcess:
@@ -57,6 +59,15 @@ def test_core_import_does_not_load_opendis():
         "import sys, pysos_interop; "
         "assert 'opendis' not in sys.modules, sorted(sys.modules); "
         "assert 'pysos_interop.dis' not in sys.modules"
+    )
+    assert result.returncode == 0, result.stderr
+
+
+def test_core_import_does_not_load_pysos_rpr():
+    result = _run(
+        "import sys, pysos_interop; "
+        "assert 'pysos_rpr' not in sys.modules, sorted(sys.modules); "
+        "assert 'pysos_interop.rpr' not in sys.modules"
     )
     assert result.returncode == 0, result.stderr
 

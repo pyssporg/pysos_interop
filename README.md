@@ -81,6 +81,26 @@ per entity/channel named `<site>_<app>_<entity>.<channel>`. Feed one entity's
 columns to `pyssp_vv.measure.Trajectory` unchanged; a missing sample is `nan`,
 which the measurement layer reports as missing coverage.
 
+## Sample fan-in
+
+`SampleFanIn` aligns one sample per expected slug when each RPR publisher owns
+its own ordinal sequence. RPR has no time field, so
+`sample_timestamp(n, sample_period_s)` defines sample `n` at
+`n * sample_period_s`.
+
+```python
+from pysos_interop import SampleFanIn
+
+fan_in = SampleFanIn(["1_1_7", "1_1_8"], write_sample, sample_period_s=0.1)
+fan_in.observe("1_1_7", state_a)
+fan_in.observe("1_1_8", state_b)   # flushes [state_a, state_b]
+fan_in.poll()                      # applies the 2 s partial-sample watchdog
+fan_in.flush()                     # drains the tail at end of stream
+```
+
+It is recorder-side assembly only: standard library, no socket, no file format,
+no RPR import, and no run control or CLI.
+
 ## Rerun export (optional)
 
 `pysos_interop.rerun_sink` turns a recorded JSONL stream, or live

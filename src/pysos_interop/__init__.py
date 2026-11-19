@@ -3,12 +3,14 @@
 The core imports only the standard library.  DIS support lives in
 :mod:`pysos_interop.dis` and needs the optional ``opendis`` package.  RPR
 support lives in :mod:`pysos_interop.rpr` and needs the optional
-``pysos-rpr`` package; neither adapter is imported here.
+``pysos-rpr`` package; neither adapter is imported here.  Recorder-side sample
+assembly lives in :mod:`pysos_interop.fanin` and is standard-library only.
 """
 
 from __future__ import annotations
 
 from .dead_reckoning import dead_reckon, is_stale
+from .fanin import SampleFanIn, sample_timestamp
 from .geo import (
     GeoOrigin,
     ecef_to_enu,
@@ -33,7 +35,7 @@ from .truth import (
     read_truth_metadata,
 )
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 __all__ = [
     "Channel",
@@ -43,6 +45,7 @@ __all__ = [
     "EntityState",
     "GeoOrigin",
     "JsonlRecorder",
+    "SampleFanIn",
     "TransportError",
     "TruthMetadata",
     "TruthRecorder",
@@ -59,4 +62,5 @@ __all__ = [
     "iter_jsonl",
     "iter_truth",
     "read_truth_metadata",
+    "sample_timestamp",
 ]

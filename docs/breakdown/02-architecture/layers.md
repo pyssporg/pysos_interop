@@ -4,9 +4,9 @@ The repository is a stack with one-way dependencies. A higher layer may import
 a lower one; a lower layer never imports a higher one.
 
 ```text
-dis (optional)   rpr (optional)   jsonl   truth   transport   rerun_sink (optional)
-     │                 │              │       │          │              │
-     └─────────────────┼──────────────┼───────┼──────────┼──────────────┘
+dis (optional)   rpr (optional)   jsonl   truth   fanin   transport   rerun_sink (optional)
+     │                 │              │       │       │        │              │
+     └─────────────────┼──────────────┼───────┼───────┼────────┼──────────────┘
                        │
                 dead_reckoning
                        │
@@ -49,6 +49,18 @@ sample rates, format version and start time. The CSV export is a leading
 `time` column plus one float column per entity/channel; that is the tabular
 shape `pyssp_vv.measure.Trajectory` consumes directly, with no adapter and no
 value translation. Missing samples are `nan`, never zero.
+
+## `fanin`
+
+`SampleFanIn` and `sample_timestamp`, the recorder-side sample assembly. RPR
+carries no time field, so `sample_timestamp(ordinal, sample_period_s)` is the
+agreed edge time base: sample `n` is at `n * sample_period_s`. `SampleFanIn`
+aligns one ordinal from every expected slug and writes a completed sample
+through a callback. A 2 s watchdog flushes the oldest partial sample so one
+missing publisher cannot stall the recording, and `flush()` drains the tail at
+end of stream. Standard library only, with no RPR/protobuf import, no socket
+and no file format. It is a passive helper: the package still provides no run
+control and no CLI.
 
 ## `transport`
 
