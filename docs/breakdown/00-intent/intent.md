@@ -33,8 +33,10 @@ meet at a shared, replaceable seam instead of negotiating pairwise.
 - **Not an orchestrator.** No run control, federation management, time
   synchronisation, or scheduling. An orchestrator consumes this contract.
 - **Not an engine.** No dynamics, integration, or model execution.
-- **Not a scenario format.** No exercise file, entity catalogue, routing table,
-  or project-specific UDP JSON schema.
+- **Not a scenario format.** No exercise file, routing table, or project-specific
+  UDP JSON schema. The truth-stream sidecar records the entity catalogue
+  observed in a run, for provenance only; it is never read back as a scenario
+  input.
 - **Not a viewer.** No rendering, Rerun bridge, or UI.
 - **Not an application.** No CLI and no run control. `Channel`, `RprChannel`,
   `JsonlRecorder`, `RprJsonlRecorder` and the `iter_*` functions are library

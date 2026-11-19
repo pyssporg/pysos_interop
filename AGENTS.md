@@ -17,7 +17,7 @@ It owns a neutral entity-state model plus protocol adapters at the edge. It
 does not own scenarios, orchestration, engines, or project-specific payloads.
 
 - Modules: `model`, `rates`, `geo`, `dead_reckoning`, `transport`, `jsonl`,
-  and the optional `dis` and `rpr` adapters.
+  `truth`, and the optional `dis`, `rpr` and `rerun` adapters.
 - It sits near the bottom of the dependency graph; consumers depend on it,
   never the reverse.
 

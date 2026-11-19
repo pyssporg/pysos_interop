@@ -56,3 +56,25 @@ assert frame.state.key == state.key
   `replay_rpr_jsonl` record payload bytes with optional sequence and timestamp.
   This is a separate format from `JsonlRecorder`; the DIS recording format is
   unchanged.
+
+## Truth stream and measurement CSV
+
+`TruthRecorder` writes one row per entity per sample together with a
+`<run>.meta.json` sidecar: run id, local origin, model ids, the observed entity
+catalogue, sample rates, format version and start time.
+
+```python
+from pysos_interop import TruthRecorder, export_measure_csv, read_truth_metadata
+
+with TruthRecorder("run.jsonl", run_id="r-42", sample_rate_hz=10.0,
+                   model_ids={"1_1_7": "aircraft"}) as recorder:
+    recorder.write_sample([state_a, state_b])   # one sample, all entities
+
+metadata = read_truth_metadata("run.jsonl")
+export_measure_csv("run.jsonl", "run.csv")
+```
+
+The CSV has a leading `time` column in simulation seconds and one float column
+per entity/channel named `<site>_<app>_<entity>.<channel>`. Feed one entity's
+columns to `pyssp_vv.measure.Trajectory` unchanged; a missing sample is `nan`,
+which the measurement layer reports as missing coverage.

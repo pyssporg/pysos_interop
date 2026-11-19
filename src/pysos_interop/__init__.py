@@ -25,6 +25,13 @@ from .transport import (
     ChannelTimeoutError,
     TransportError,
 )
+from .truth import (
+    TruthMetadata,
+    TruthRecorder,
+    export_measure_csv,
+    iter_truth,
+    read_truth_metadata,
+)
 
 __version__ = "0.1.0"
 
@@ -37,6 +44,8 @@ __all__ = [
     "GeoOrigin",
     "JsonlRecorder",
     "TransportError",
+    "TruthMetadata",
+    "TruthRecorder",
     "__version__",
     "body_rates_to_euler_rates",
     "dead_reckon",
@@ -44,7 +53,10 @@ __all__ = [
     "ecef_to_geodetic",
     "enu_to_ecef",
     "euler_rates_to_body_rates",
+    "export_measure_csv",
     "geodetic_to_ecef",
     "is_stale",
     "iter_jsonl",
+    "iter_truth",
+    "read_truth_metadata",
 ]

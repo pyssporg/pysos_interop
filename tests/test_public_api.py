@@ -18,6 +18,8 @@ def test_public_surface_is_explicit():
         "GeoOrigin",
         "JsonlRecorder",
         "TransportError",
+        "TruthMetadata",
+        "TruthRecorder",
         "__version__",
         "body_rates_to_euler_rates",
         "dead_reckon",
@@ -25,9 +27,12 @@ def test_public_surface_is_explicit():
         "ecef_to_geodetic",
         "enu_to_ecef",
         "euler_rates_to_body_rates",
+        "export_measure_csv",
         "geodetic_to_ecef",
         "is_stale",
         "iter_jsonl",
+        "iter_truth",
+        "read_truth_metadata",
     }
     assert set(pysos_interop.__all__) == expected
     for name in pysos_interop.__all__:

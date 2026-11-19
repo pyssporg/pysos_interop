@@ -20,6 +20,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `RprJsonlRecorder`, `iter_rpr_jsonl`, `iter_rpr_frames` and
   `replay_rpr_jsonl` record payloads with optional sequence and timestamp.
   The existing JSONL/DIS recording path is unchanged.
+- `TruthRecorder` and `iter_truth` record one row per entity per sample with a
+  `<run>.meta.json` sidecar: run id, origin, model ids, entity catalogue,
+  sample rates, format version and start time.
+- `export_measure_csv` writes the canonical `time` plus scalar-column CSV that
+  `pyssp_vv.measure.Trajectory` consumes directly, including `nan` for a
+  missing sample.
 
 ## [0.1.0] - 2026-11-19
 

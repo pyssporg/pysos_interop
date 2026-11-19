@@ -4,9 +4,9 @@ The repository is a stack with one-way dependencies. A higher layer may import
 a lower one; a lower layer never imports a higher one.
 
 ```text
-dis (optional)   rpr (optional)   jsonl        transport
-     │                 │              │             │
-     └─────────────────┼──────────────┼─────────────┘
+dis (optional)   rpr (optional)   jsonl   truth   transport
+     │                 │              │       │          │
+     └─────────────────┼──────────────┼───────┼──────────┘
                        │
                 dead_reckoning
                        │
@@ -38,6 +38,17 @@ model and `rates`; performs no I/O.
 
 `JsonlRecorder` and `iter_jsonl`. Transport-agnostic persistence of
 `EntityState`. One JSON object per line, field order mirrors the dataclass.
+
+## `truth`
+
+`TruthRecorder`, `iter_truth`, the metadata sidecar and `export_measure_csv`.
+The truth stream is one JSON object per entity per sample; it is a superset of
+the `jsonl` row (it adds a `sample` index), so `iter_jsonl` also reads it. The
+sidecar records run id, origin, model ids, the observed entity catalogue,
+sample rates, format version and start time. The CSV export is a leading
+`time` column plus one float column per entity/channel; that is the tabular
+shape `pyssp_vv.measure.Trajectory` consumes directly, with no adapter and no
+value translation. Missing samples are `nan`, never zero.
 
 ## `transport`
 
