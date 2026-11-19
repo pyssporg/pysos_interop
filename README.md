@@ -8,11 +8,13 @@
 pip install pysos-interop
 pip install "pysos-interop[dis]"   # IEEE 1278.1 Entity State PDU codec
 pip install "pysos-interop[rpr]"   # RPR-derived protobuf codec, Python >= 3.11
+pip install "pysos-interop[rerun]" # optional .rrd export, Python >= 3.11
 ```
 
-The core never imports either adapter. `pysos_interop.rpr` imports `pysos_rpr`
-when the module is imported, so RPR is a dependency of that path only; the
-`dis` and `rpr` extras are independent.
+The core never imports any adapter. `pysos_interop.rpr` imports `pysos_rpr`
+when the module is imported, so RPR is a dependency of that path only;
+`pysos_interop.rerun_sink` imports `rerun` lazily when a sink is constructed.
+The `dis`, `rpr` and `rerun` extras are independent.
 
 ## API
 
@@ -78,3 +80,20 @@ The CSV has a leading `time` column in simulation seconds and one float column
 per entity/channel named `<site>_<app>_<entity>.<channel>`. Feed one entity's
 columns to `pyssp_vv.measure.Trajectory` unchanged; a missing sample is `nan`,
 which the measurement layer reports as missing coverage.
+
+## Rerun export (optional)
+
+`pysos_interop.rerun_sink` turns a recorded JSONL stream, or live
+`EntityState`/`RprFrame` values, into an `.rrd` file. It is synchronous, owns no
+thread or socket, and imports `rerun` only when a sink is constructed, so the
+core stays dependency-light and the module imports cleanly without the extra.
+
+```python
+from pysos_interop.rerun_sink import recordings_to_rrd
+
+recordings_to_rrd("run.jsonl", "run.rrd", app_id="pysos_interop")
+```
+
+Paths follow `world/entity/<site>_<app>_<entity>/{pose,trail,marker}` plus
+`status/{airspeed_mps,altitude_m,climb_rate_mps}`. The Rerun world frame is
+ENU and orientation is logged as a `(x, y, z, w)` quaternion.

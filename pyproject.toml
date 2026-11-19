@@ -21,19 +21,22 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Topic :: Scientific/Engineering",
 ]
-# The core is standard-library only.  DIS and RPR support are optional extras.
-# The generated bindings in pysos-rpr require Python >= 3.11, so the rpr extra
-# is available on 3.11+ only; the core still supports 3.10.
+# The core is standard-library only.  DIS, RPR and Rerun support are optional
+# extras.  The generated bindings in pysos-rpr require Python >= 3.11, and so
+# does rerun-sdk 0.43, so those extras are available on 3.11+ only; the core
+# still supports 3.10.
 dependencies = []
 
 [project.optional-dependencies]
 dis = ["opendis>=1.0"]
 rpr = ["pysos-rpr>=0.1"]
+rerun = ["rerun-sdk>=0.43,<0.44; python_version >= '3.11'"]
 dev = [
   "pytest>=8",
   "ruff>=0.6",
   "opendis>=1.0",
   "pysos-rpr>=0.1; python_version >= '3.11'",
+  "rerun-sdk>=0.43,<0.44; python_version >= '3.11'",
 ]
 
 [tool.hatch.version]

@@ -30,15 +30,17 @@ does not own scenarios, orchestration, engines, or project-specific payloads.
 - **Protocol conversion only at the boundary.** ENU/ECEF, Euler/body rates,
   and DIS field ordering belong in `dis`, `geo`, or `rates`, never in
   `model`, engines, or recorders.
-- **No project schemas.** No scenario format, UDP JSON payload schema,
-  Rerun bridge, or consumer-specific field may enter this repository.
+- **No project schemas.** No scenario format, UDP JSON payload schema, or
+  consumer-specific field may enter this repository. The truth stream and the
+  measurement CSV are neutral hub formats; the optional rerun sink exports the
+  neutral stream and is not a protocol bridge.
 - **The core has no dependency on another `pysos_*` or `pyssp_*` package.**
   Optional protocol extras may depend on a sibling vocabulary package: only
   the `rpr` extra uses `pysos-rpr`, and the core never imports it.
 - **Protocol dependencies are optional.** `import pysos_interop` and every core
-  module must work without `opendis` and `pysos_rpr`; only
-  `pysos_interop.dis` and `pysos_interop.rpr` may require them, and only when
-  those modules are imported.
+  module must work without `opendis`, `pysos_rpr` and `rerun-sdk`; only
+  `pysos_interop.dis`, `pysos_interop.rpr` and `pysos_interop.rerun_sink` may
+  require them, and only when those paths are used.
 - **No CLI and no application framework.** `Channel`, `RprChannel`,
   `JsonlRecorder`, `RprJsonlRecorder` and the `iter_*` functions are library
   edge code; do not add run control.
@@ -46,7 +48,8 @@ does not own scenarios, orchestration, engines, or project-specific payloads.
 ## Code guidelines
 
 - Public vocabulary is small and stable: `EntityKey`, `EntityState`, `Channel`,
-  `JsonlRecorder`. Prefer plain dataclasses and explicit arguments.
+  `JsonlRecorder`, `TruthRecorder`. Prefer plain dataclasses and explicit
+  arguments.
 - Pure functions for rates and dead reckoning; no hidden clock or global state.
 - Transport failures raise typed errors. Never swallow an error silently.
 - Tests must cover the independent wire convention, not only encode/decode

@@ -37,7 +37,10 @@ meet at a shared, replaceable seam instead of negotiating pairwise.
   UDP JSON schema. The truth-stream sidecar records the entity catalogue
   observed in a run, for provenance only; it is never read back as a scenario
   input.
-- **Not a viewer.** No rendering, Rerun bridge, or UI.
+- **Not a viewer.** No rendering, live bridge, viewer process, or UI. An
+  optional, lazily imported sink may export a recorded or handed-in entity
+  stream to an `.rrd` file for offline inspection; it owns no process and is
+  not a live protocol bridge.
 - **Not an application.** No CLI and no run control. `Channel`, `RprChannel`,
   `JsonlRecorder`, `RprJsonlRecorder` and the `iter_*` functions are library
   edge code, not sinks that own a process.

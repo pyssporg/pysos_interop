@@ -26,6 +26,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `export_measure_csv` writes the canonical `time` plus scalar-column CSV that
   `pyssp_vv.measure.Trajectory` consumes directly, including `nan` for a
   missing sample.
+- Optional `rerun` extra: `pysos_interop.rerun_sink` logs `EntityState` or
+  decoded `RprFrame` values to an `.rrd` file at
+  `world/entity/<site>_<app>_<entity>/{pose,trail,marker}` and
+  `status/{airspeed_mps,altitude_m,climb_rate_mps}`. `recordings_to_rrd`
+  converts a recorded JSONL stream. `rerun` is imported lazily; the core
+  never imports it.
 
 ## [0.1.0] - 2026-11-19
 

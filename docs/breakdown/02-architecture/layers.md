@@ -4,9 +4,9 @@ The repository is a stack with one-way dependencies. A higher layer may import
 a lower one; a lower layer never imports a higher one.
 
 ```text
-dis (optional)   rpr (optional)   jsonl   truth   transport
-     │                 │              │       │          │
-     └─────────────────┼──────────────┼───────┼──────────┘
+dis (optional)   rpr (optional)   jsonl   truth   transport   rerun_sink (optional)
+     │                 │              │       │          │              │
+     └─────────────────┼──────────────┼───────┼──────────┼──────────────┘
                        │
                 dead_reckoning
                        │
@@ -76,6 +76,16 @@ set; `exercise_id` and `timestamp` have no RPR field. `RprChannel` is a
 synchronous source/sink over one `Channel`, and `RprJsonlRecorder` plus
 `iter_rpr_frames`/`replay_rpr_jsonl` provide a separate record/replay path so
 the DIS recording format stays untouched.
+
+## `rerun_sink` (optional extra)
+
+`RerunSink` and `recordings_to_rrd` log `EntityState` or decoded `RprFrame`
+values to an `.rrd` file at `world/entity/<site>_<app>_<entity>/pose`,
+`/trail`, `/marker` and `status/{airspeed_mps,altitude_m,climb_rate_mps}`. The
+Rerun world frame is ENU and orientation is a `(x, y, z, w)` quaternion.
+`rerun` is imported lazily when a sink is constructed, so importing the module
+or the package never requires the extra. The sink is synchronous and owns no
+process, socket or run control.
 
 ## Rule
 
