@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- A generated SysML projection of `EntityState` (`sysml/entity_state.sysml`,
+  `tools/generate_sysml.py`), so a simulation declares the neutral entity state
+  as a port instead of restating it. Identity, timestamp and exercise stay out
+  of the model definition, and the static descriptors are parameters rather
+  than port members.
+
 ## [0.4.0] - 2026-11-19
 
 Additive release: the recorder-side sample fan-in moves into the core record
