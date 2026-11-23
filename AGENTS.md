@@ -17,12 +17,14 @@ It owns a neutral entity-state model plus protocol adapters at the edge. It
 does not own scenarios, orchestration, engines, or project-specific payloads.
 
 - Modules: `model`, `rates`, `geo`, `dead_reckoning`, `transport`, `jsonl`,
-  `truth`, `fanin`, and the optional `dis`, `rpr` and `rerun` adapters.
+  `truth`, `fanin`, and the optional `dis`, `rpr` and `rerun_sink` adapters.
 - It sits near the bottom of the dependency graph; consumers depend on it,
   never the reverse.
 - `SampleFanIn` is recorder-side passive sample assembly. It takes an injectable
   clock and a `write_sample` callback; it owns no socket, protocol import, file
   format or run control.
+- `sysml/entity_state.sysml` is generated from `model.EntityState` by
+  `tools/generate_sysml.py`; edit the model, never the generated SysML.
 
 ## Hard constraints
 

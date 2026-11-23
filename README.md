@@ -4,11 +4,16 @@
 
 ## Install
 
+Python 3.10 or newer is required. The core has no dependencies; the optional
+adapters need their extra and, for `rpr` and `rerun`, Python 3.11 or newer.
+
 ```bash
 pip install pysos-interop
 pip install "pysos-interop[dis]"   # IEEE 1278.1 Entity State PDU codec
 pip install "pysos-interop[rpr]"   # RPR-derived protobuf codec, Python >= 3.11
 pip install "pysos-interop[rerun]" # optional .rrd export, Python >= 3.11
+pip install -e ".[dev]"            # this checkout, with tests and lint
+pip install -e "repos/pysos_interop[dev]"  # from the workspace root
 ```
 
 The core never imports any adapter. `pysos_interop.rpr` imports `pysos_rpr`
@@ -77,9 +82,10 @@ export_measure_csv("run.jsonl", "run.csv")
 ```
 
 The CSV has a leading `time` column in simulation seconds and one float column
-per entity/channel named `<site>_<app>_<entity>.<channel>`. Feed one entity's
-columns to `pyssp_vv.measure.Trajectory` unchanged; a missing sample is `nan`,
-which the measurement layer reports as missing coverage.
+per entity/channel named `<site>_<app>_<entity>.<channel>`. Strip the
+`<slug>.` prefix and feed one entity's columns to
+`pyssp_vv.measure.Trajectory`; the values need no translation. A missing sample
+is `nan`, which the measurement layer reports as missing coverage.
 
 ## Sample fan-in
 
@@ -129,3 +135,18 @@ ENU and orientation is logged as a `(x, y, z, w)` quaternion.
 static `world/entity/<slug>/label` `TextDocument`; a supplied 0-255 RGB colour
 tints that entity's `marker` and `trail`. Slugs without an entry keep the
 previous output exactly; with neither mapping supplied the `.rrd` is unchanged.
+
+## Development
+
+```bash
+python -m pytest                       # default suite
+python -m pytest -m "not network"      # skip the opt-in multicast test
+ruff check src tests
+```
+
+The multicast test is skipped unless `PYSOS_NETWORK_TESTS=1` is set. Ruff is
+configured in `pyproject.toml` (line length 100, target `py310`). Read
+[`AGENTS.md`](AGENTS.md) and the
+[intent](docs/breakdown/00-intent/intent.md) before changing behaviour; the
+module stack is in
+[`docs/breakdown/02-architecture/layers.md`](docs/breakdown/02-architecture/layers.md).
