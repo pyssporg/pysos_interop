@@ -67,11 +67,11 @@ def _expected_members() -> list[tuple[str, str, str | None]]:
 
 
 def test_port_definition_matches_dataclass():
-    sysml2 = pytest.importorskip("pycps_sysml2")
+    sysml2 = pytest.importorskip("pycps_sysml")
     try:
         architecture = sysml2.load(SYSML)
     except Exception as exc:  # report the parser's verdict, do not hide it
-        pytest.fail(f"pycps_sysml2 rejected {SYSML.relative_to(ROOT)}: {exc}")
+        pytest.fail(f"pycps_sysml rejected {SYSML.relative_to(ROOT)}: {exc}")
 
     assert "EntityState" in architecture.port_definitions
     port = architecture.port_definitions["EntityState"]
