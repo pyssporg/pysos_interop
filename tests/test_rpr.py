@@ -176,6 +176,20 @@ def test_channel_adapter_delivers_a_frame():
     assert frame.state.marking == state.marking
 
 
+def test_unix_channel_adapter_delivers_a_frame(tmp_path):
+    path = str(tmp_path / "rpr.sock")
+    state = make_state()
+    with (
+        RprChannel.from_unix(path, bind=True, origin=ORIGIN) as receiver,
+        RprChannel.from_unix(path, origin=ORIGIN) as sender,
+    ):
+        assert sender.send(state) > 0
+        frame = receiver.recv(2.0)
+
+    assert frame.state.key == state.key
+    assert frame.state.marking == state.marking
+
+
 def test_recording_and_replay_reproduce_entity_state(tmp_path):
     state = make_state(timestamp=0.0, exercise_id=1)
     path = tmp_path / "rpr.jsonl"

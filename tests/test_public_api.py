@@ -20,6 +20,7 @@ def test_public_surface_is_explicit():
         "SampleFanIn",
         "TransportError",
         "TruthMetadata",
+        "UnixChannel",
         "TruthRecorder",
         "__version__",
         "body_rates_to_euler_rates",

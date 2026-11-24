@@ -1,7 +1,8 @@
-"""UDP channel tests: unicast always, multicast opt-in."""
+"""Datagram channel tests: UDP unicast always, multicast opt-in, Unix always."""
 
 import os
 import socket
+import uuid
 
 import pytest
 
@@ -10,7 +11,13 @@ from pysos_interop.transport import (
     ChannelClosedError,
     ChannelTimeoutError,
     TransportError,
+    UnixChannel,
+    parse_unix_endpoint,
 )
+
+
+def unique_abstract_name() -> str:
+    return f"@pysos-test-{os.getpid()}-{uuid.uuid4().hex}"
 
 
 def free_udp_port() -> int:
@@ -48,6 +55,85 @@ def test_closed_and_failed_channels_raise_typed_errors():
 
     with pytest.raises(TransportError):
         Channel("203.0.113.1", free_udp_port(), bind=True).open()
+
+
+def test_unix_pathname_round_trip(tmp_path):
+    path = str(tmp_path / "peer.sock")
+    payload = b"\x07\x01\x01\x01unix-entity-state"
+    with (
+        UnixChannel(path, bind=True) as receiver,
+        UnixChannel(path) as sender,
+    ):
+        assert receiver.local_address == path
+        assert sender.local_address is None
+        assert sender.send(payload) == len(payload)
+        assert receiver.recv(2.0) == payload
+
+
+def test_unix_abstract_round_trip():
+    name = unique_abstract_name()
+    payload = b"abstract-datagram"
+    with (
+        UnixChannel(name, bind=True) as receiver,
+        UnixChannel(name) as sender,
+    ):
+        assert receiver.local_address == name
+        assert sender.send(payload) == len(payload)
+        assert receiver.recv(2.0) == payload
+
+
+def test_unix_receive_timeout_raises_a_typed_error():
+    with UnixChannel(unique_abstract_name(), bind=True) as receiver:
+        with pytest.raises(ChannelTimeoutError):
+            receiver.recv(0.01)
+
+
+def test_unix_closed_channel_raises_a_typed_error():
+    channel = UnixChannel(unique_abstract_name(), bind=True).open()
+    channel.close()
+    with pytest.raises(ChannelClosedError):
+        channel.send(b"closed")
+    with pytest.raises(ChannelClosedError):
+        channel.recv(0.01)
+
+
+def test_unix_pathname_unlinks_a_stale_socket(tmp_path):
+    path = tmp_path / "stale.sock"
+    stale = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+    try:
+        stale.bind(str(path))
+    finally:
+        stale.close()
+    assert path.exists()
+
+    with UnixChannel(str(path), bind=True) as receiver:
+        assert receiver.local_address == str(path)
+        assert path.is_socket()
+
+
+def test_unix_pathname_preserves_a_non_socket_path(tmp_path):
+    path = tmp_path / "not-a-socket.txt"
+    path.write_bytes(b"keep me")
+
+    with pytest.raises(TransportError):
+        UnixChannel(str(path), bind=True).open()
+
+    assert path.read_bytes() == b"keep me"
+
+
+def test_unix_endpoint_parsing_and_from_endpoint(tmp_path):
+    path = str(tmp_path / "peer.sock")
+    assert parse_unix_endpoint(f"unix://{path}") == path
+    assert parse_unix_endpoint("unix://@peer") == "@peer"
+
+    with pytest.raises(ValueError):
+        parse_unix_endpoint("udp://127.0.0.1:3000")
+    with pytest.raises(ValueError):
+        parse_unix_endpoint("unix://relative.sock")
+
+    with Channel.from_endpoint(f"unix://{path}", bind=True) as receiver:
+        assert isinstance(receiver, UnixChannel)
+        assert receiver.local_address == path
 
 
 @pytest.mark.network

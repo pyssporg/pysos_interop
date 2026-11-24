@@ -32,6 +32,26 @@ state = EntityState(key, 0.0, (0.0, 0.0, 1000.0), (50.0, 0.0, 0.0),
 next_state = dead_reckon(state, 1.0, algorithm=2)
 ```
 
+## Transport
+
+`Channel` is the IPv4 UDP edge, unicast or multicast. `UnixChannel` is the
+single-host Unix-domain datagram edge with the same `send` and `recv(timeout)`
+contract, one datagram per message. Pass `bind=True` to receive.
+
+```python
+from pysos_interop import Channel
+
+with Channel.from_endpoint("unix:///tmp/peer.sock", bind=True) as receiver:
+    payload = receiver.recv(1.0)
+
+with Channel.from_endpoint("unix:///tmp/peer.sock") as sender:
+    sender.send(payload)
+```
+
+Abstract names (`unix://@name`, or `UnixChannel("@name")`) need no filesystem
+cleanup and are preferable for ephemeral runs. A pathname receiver unlinks a
+stale socket before binding, but refuses to remove a non-socket path.
+
 ## RPR
 
 RPR position is geocentric ECEF while `EntityState` is local ENU, so every

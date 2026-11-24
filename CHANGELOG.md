@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   as a port instead of restating it. Identity, timestamp and exercise stay out
   of the model definition, and the static descriptors are parameters rather
   than port members.
+- `pysos_interop.transport.UnixChannel`, an `AF_UNIX`/`SOCK_DGRAM` channel
+  with the same `send`/`recv(timeout)` contract as `Channel`. It accepts a
+  pathname or an `@abstract` name; `Channel.from_endpoint("unix:///abs/path")`
+  and `Channel.from_endpoint("unix://@name")` construct one, and `RprChannel`
+  gains `from_unix`. A pathname receiver unlinks a stale socket before binding
+  and never removes a non-socket path.
 
 ## [0.4.0] - 2026-11-19
 

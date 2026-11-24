@@ -26,6 +26,7 @@ from .transport import (
     ChannelClosedError,
     ChannelTimeoutError,
     TransportError,
+    UnixChannel,
 )
 from .truth import (
     TruthMetadata,
@@ -49,6 +50,7 @@ __all__ = [
     "TransportError",
     "TruthMetadata",
     "TruthRecorder",
+    "UnixChannel",
     "__version__",
     "body_rates_to_euler_rates",
     "dead_reckon",

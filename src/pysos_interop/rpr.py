@@ -65,7 +65,7 @@ from .geo import (
     geodetic_to_ecef,
 )
 from .model import EntityKey, EntityState, Vec3
-from .transport import Channel
+from .transport import Channel, UnixChannel
 
 try:  # pragma: no cover - exercised by the optional-extra import test
     from google.protobuf.message import Message
@@ -480,7 +480,7 @@ def decode_entity_state(
 
 
 class RprChannel:
-    """Synchronous RPR source/sink over one :class:`~pysos_interop.transport.Channel`.
+    """Synchronous RPR source/sink over one datagram channel.
 
     The adapter owns no socket and starts no thread.  :meth:`send` encodes one
     state and forwards the datagram; :meth:`recv` reads one datagram and
@@ -489,7 +489,7 @@ class RprChannel:
 
     def __init__(
         self,
-        channel: Channel,
+        channel: Channel | UnixChannel,
         *,
         origin: RprOrigin,
         message_type: type[Message] = _rpr.PhysicalEntity,
@@ -500,6 +500,25 @@ class RprChannel:
         self.origin = origin
         self.message_type = message_type
         self.strict = strict
+
+    @classmethod
+    def from_unix(
+        cls,
+        path: str,
+        *,
+        origin: RprOrigin,
+        bind: bool = False,
+        message_type: type[Message] = _rpr.PhysicalEntity,
+        strict: bool = True,
+    ) -> RprChannel:
+        """Build an RPR channel over a Unix-domain datagram endpoint."""
+
+        return cls(
+            UnixChannel(path, bind=bind),
+            origin=origin,
+            message_type=message_type,
+            strict=strict,
+        )
 
     def open(self) -> RprChannel:
         self.channel.open()
