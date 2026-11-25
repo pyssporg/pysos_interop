@@ -48,6 +48,7 @@ STATUS_LEAVES: tuple[str, ...] = (
     "status/airspeed_mps",
     "status/altitude_m",
     "status/climb_rate_mps",
+    "status/climb_angle_deg",
 )
 
 #: Leaves logged for every entity, in path order.
@@ -106,6 +107,24 @@ def _origin_text(origin: GeoOrigin) -> str:
     )
 
 
+def _climb_angle_deg(previous: tuple[float, Vec3] | None, state: EntityState) -> float:
+    """Climb angle above the horizon, from two consecutive fixes (ENU, z up).
+
+    Position deltas, not ``velocity_enu_mps``: the streamed vertical velocity
+    can stay near zero while altitude changes, so it cannot carry the angle.
+    """
+    if previous is None:
+        return 0.0
+    t0, before = previous
+    dt = float(state.timestamp) - t0
+    if dt <= 0.0:
+        return 0.0
+    after = state.position_enu_m
+    climb_rate = (after[2] - before[2]) / dt
+    ground_speed = math.hypot(after[0] - before[0], after[1] - before[1]) / dt
+    return math.degrees(math.atan2(climb_rate, ground_speed))
+
+
 def _state_of(item: EntityState | RprFrame) -> EntityState:
     state = getattr(item, "state", item)
     if not isinstance(state, EntityState):
@@ -143,6 +162,7 @@ class RerunSink:
         self.labels = dict(labels or {})
         self.colors = dict(colors or {})
         self._histories: dict[str, deque[Vec3]] = {}
+        self._last_fix: dict[str, tuple[float, Vec3]] = {}
         self._closed = False
 
         self._rec = rr.RecordingStream(app_id)
@@ -216,6 +236,11 @@ class RerunSink:
             entity_path(state.key, "status/climb_rate_mps"),
             self._rr.Scalars(float(state.velocity_enu_mps[2])),
         )
+        self._rec.log(
+            entity_path(state.key, "status/climb_angle_deg"),
+            self._rr.Scalars(_climb_angle_deg(self._last_fix.get(slug), state)),
+        )
+        self._last_fix[slug] = (float(state.timestamp), state.position_enu_m)
 
     def close(self) -> None:
         if self._closed:

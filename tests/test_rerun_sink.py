@@ -170,6 +170,19 @@ def test_closed_sink_refuses_more_observations(tmp_path):
         sink.observe(state_at(KEYS[0], 0))
 
 
+def test_climb_angle_comes_from_successive_positions(tmp_path):
+    stream = write_stream(tmp_path / "run.jsonl", samples=3)
+    rrd_path = recordings_to_rrd(stream, tmp_path / "climb.rrd", app_id="pysos-test")
+
+    values = component_values_in(
+        rrd_path, entity_path(KEYS[0], "status/climb_angle_deg"), "Scalars:scalars"
+    )
+    assert values is not None
+    expected = math.degrees(math.atan2(1.0, math.hypot(10.0, 20.0)))
+    assert values[0][0] == pytest.approx(0.0)
+    assert values[-1][0] == pytest.approx(expected)
+
+
 def test_quaternion_helpers():
     assert rpy_rad_to_quaternion(0.0, 0.0, 0.0) == (0.0, 0.0, 0.0, 1.0)
     x, y, z, w = rpy_rad_to_quaternion(0.0, 0.0, math.pi / 2.0)
