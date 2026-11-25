@@ -7,7 +7,7 @@ name = "pysos-interop"
 dynamic = ["version"]
 description = "Neutral entity-state model and protocol interop for system-of-systems simulation."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [{ name = "pyssporg contributors" }]
 keywords = ["dis", "interop", "entity-state", "simulation", "system-of-systems"]
@@ -16,26 +16,24 @@ classifiers = [
   "Intended Audience :: Science/Research",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Topic :: Scientific/Engineering",
 ]
 # The core is standard-library only.  DIS, RPR and Rerun support are optional
 # extras.  The generated bindings in pysos-rpr require Python >= 3.11, and so
-# does rerun-sdk 0.43, so those extras are available on 3.11+ only; the core
-# still supports 3.10.
+# does rerun-sdk 0.43, which matches the package floor.
 dependencies = []
 
 [project.optional-dependencies]
 dis = ["opendis>=1.0"]
-rpr = ["pysos-rpr @ https://github.com/pyssporg/pysos_rpr/releases/download/v0.1.0/pysos_rpr-0.1.0-py3-none-any.whl"]
+rpr = ["pysos-rpr @ https://github.com/pyssporg/pysos_rpr/releases/download/v0.2.0/pysos_rpr-0.2.0-py3-none-any.whl"]
 rerun = ["rerun-sdk>=0.43,<0.44; python_version >= '3.11'"]
 dev = [
   "pytest>=8",
   "ruff>=0.6",
   "opendis>=1.0",
-  "pysos-rpr @ https://github.com/pyssporg/pysos_rpr/releases/download/v0.1.0/pysos_rpr-0.1.0-py3-none-any.whl ; python_version >= '3.11'",
+  "pysos-rpr @ https://github.com/pyssporg/pysos_rpr/releases/download/v0.2.0/pysos_rpr-0.2.0-py3-none-any.whl ; python_version >= '3.11'",
   "rerun-sdk>=0.43,<0.44; python_version >= '3.11'",
 ]
 
@@ -59,7 +57,7 @@ markers = [
 
 [tool.ruff]
 line-length = 100
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B"]

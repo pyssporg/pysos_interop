@@ -4,8 +4,8 @@
 
 ## Install
 
-Python 3.10 or newer is required. The core has no dependencies; the optional
-adapters need their extra and, for `rpr` and `rerun`, Python 3.11 or newer.
+Python 3.11 or newer is required. The core has no dependencies; the optional
+adapters need their extra.
 
 ```bash
 pip install pysos-interop

@@ -36,7 +36,7 @@ from .truth import (
     read_truth_metadata,
 )
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 
 __all__ = [
     "Channel",

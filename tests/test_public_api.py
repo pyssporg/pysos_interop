@@ -1,6 +1,7 @@
 """Public surface and import-isolation tests."""
 
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -40,7 +41,7 @@ def test_public_surface_is_explicit():
     assert set(pysos_interop.__all__) == expected
     for name in pysos_interop.__all__:
         assert hasattr(pysos_interop, name)
-    assert pysos_interop.__version__ == "0.4.0"
+    assert re.fullmatch(r"\d+\.\d+\.\d+", pysos_interop.__version__)
 
 
 def _run(code: str) -> subprocess.CompletedProcess:

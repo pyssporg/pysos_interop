@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.5.0] - 2026-11-24
 
 ### Added
 
@@ -20,6 +20,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and `Channel.from_endpoint("unix://@name")` construct one, and `RprChannel`
   gains `from_unix`. A pathname receiver unlinks a stale socket before binding
   and never removes a non-socket path.
+
+### Changed
+
+- Followed the sibling renames of `pyssp_sysml` and `pycps_sysml`.
+- The `rpr` extra and the `dev` extra pin `pysos-rpr` v0.2.0.
+- The package floor is Python 3.11, matching the sibling extras.
 
 ## [0.4.0] - 2026-11-19
 

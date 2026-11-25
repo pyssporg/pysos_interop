@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ["3.10", "3.11", "3.12"]
+        python: ["3.11", "3.12"]
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
@@ -49,5 +49,4 @@ jobs:
         run: python -c "import pysos_interop.dis"
 
       - name: RPR extra imports
-        if: matrix.python != '3.10'
         run: python -c "import pysos_interop.rpr"

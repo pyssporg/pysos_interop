@@ -63,7 +63,7 @@ does not own scenarios, orchestration, engines, or project-specific payloads.
 
 ## Environment
 
-- Python >= 3.10, `src/` layout.
+- Python >= 3.11, `src/` layout.
 - Install: `pip install -e ".[dev]"` (includes `opendis` for the DIS tests).
 - Tests: `python -m pytest -m "not network"`; lint: `ruff check src tests`
-  (line length 100, target py310).
+  (line length 100, target py311).
